@@ -15,6 +15,7 @@ class CalendarData {
 
 	public CalendarData(){ //
 		DBConnect connect = new DBConnect();
+		connect.login();
 		connect.setTable();
 		setCurrentDate();
 	}
