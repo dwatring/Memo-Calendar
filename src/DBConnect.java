@@ -3,17 +3,16 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Scanner;
 
 public class DBConnect {
 	private static Connection con;
 	private static Statement st;
 	private static ResultSet rs;
-	private static String hostname = "db4free.net"; //Enter hostname for database here as hostname
+	private static String hostname = "sorrycounter.xyz"; //Enter hostname for database here as hostname
 	private int port = 3306;
-	private String dbUsername = "dwatring"; //Enter username for hostname here
-	private String dbPassword = "derekvw"; //Enter password for hostname here. Unless no pass then leave blank
-	private String dbName = "todo"; //Intended name of the table in the DB to be created
+	private String dbUsername = "sorrycou_memo"; //Enter username for hostname here
+	private String dbPassword = "PASSWORDHERE"; //Enter password for hostname here. Unless no pass then leave blank
+	private String dbName = "sorrycou_todo"; //Intended name of the database in the DB to be created
 	private String username;
 	private static String password;
 	private static String usernameDB;
@@ -28,16 +27,10 @@ public class DBConnect {
 		}catch(Exception ex){
 			ex.printStackTrace();
 		}
-	}
-	
-	public void login(){
-		System.out.println("Please enter your username:");
-		Scanner in = new Scanner(System.in);
-		this.username = in.nextLine();
+		this.username = Login.username;
+		password = Login.username;
 		usernameDB = this.username;
-		System.out.println("Please enter your password:");
-		password = in.nextLine();
-		in.close();
+		setTable();
 	}
 	
 	public void setTable(){
@@ -58,7 +51,25 @@ public class DBConnect {
 		}
 	}
 	
+	public static int getDates(MemoCalendar calendar){
+		int year = format(calendar.year);
+		int month = format(calendar.month) + 1;
+		try{
+			String query = ("SELECT DAY(date) FROM "+usernameDB+" WHERE content<>'' AND MONTH(date) = "+month+"  AND YEAR(date) = "+year);
+			rs = st.executeQuery(query);
+			System.out.println("Getting days with memos from this month");
+			int days = rs.getInt("day(date)");
+			System.out.println(days);
+			System.out.println(rs);
+			return days;
+		}catch(Exception ex){
+			ex.printStackTrace();
+			System.out.println("Could not retrieve data from database");
+		}
+		return 0;
+	}
 	public static String getContentData(MemoCalendar calendar){
+		getDates(calendar);
 		int year = format(calendar.year);
 		int month = format(calendar.month) + 1;
 		int day = format(calendar.day);
@@ -87,7 +98,6 @@ public class DBConnect {
 		int todayDay = format(calendar.today.get(5));
 		String currentDate = todayYear+"-"+todayMonth+"-"+todayDay;
 		String date = year+"-"+month+"-"+day;
-		System.out.println("WORKING");
 		try{
 			String query = "INSERT INTO "+usernameDB+" (password, creationDate, content, date, category) VALUES ('"+password+"', '"+
 					currentDate+"', '"+

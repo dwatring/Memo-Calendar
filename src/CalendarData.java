@@ -13,12 +13,7 @@ class CalendarData {
 	Calendar today = Calendar.getInstance();
 	Calendar cal;
 
-	public CalendarData(){ //
-		DBConnect connect = new DBConnect();
-		connect.login();
-		connect.setTable();
-		setCurrentDate();
-	}
+	public CalendarData(){}
 
 	public void setCurrentDate(){ //Sets current calendar data based on getInstance of today
 		this.year = this.today.get(1);

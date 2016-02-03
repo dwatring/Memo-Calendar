@@ -7,7 +7,6 @@ import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import javax.swing.BorderFactory;
@@ -54,12 +53,14 @@ public class MemoCalendar extends CalendarData {
 	public static void main(String[] args) {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
-				new MemoCalendar();
+				Login login = new Login();
+				login.setVisible(true);
 			}
 		});
 	}
 
 	public MemoCalendar() {
+		setCurrentDate();
 		this.mainFrame = new JFrame("Memo Calendar - Derek-watring.com");
 		this.mainFrame.setDefaultCloseOperation(3);
 		this.mainFrame.setSize(700, 400);
@@ -265,15 +266,14 @@ public class MemoCalendar extends CalendarData {
 				} else if (j == 6) {
 					fontColor = "blue";
 				}
-				File f = new File("MemoData/" + this.year + (this.month + 1 < 10 ? "0" : "") + (this.month + 1)
-						+ (this.calDates[i][j] < 10 ? "0" : "") + this.calDates[i][j] + ".txt");
-				if (f.exists()) {
-					this.dateButs[i][j].setText(
-							"<html><b><font color=" + fontColor + ">" + this.calDates[i][j] + "</font></b></html>");
-				} else {
-					this.dateButs[i][j]
-							.setText("<html><font color=" + fontColor + ">" + this.calDates[i][j] + "</font></html>");
+				this.dateButs[i][j]
+					.setText("<html><font color=" + fontColor + ">" + this.calDates[i][j] + "</font></html>");
+				JLabel memoMark = new JLabel("<html><font color=blue>*</html>");
+				if (this.calDates[i][j] == this.today.get(5)) {
+					this.dateButs[i][j].add(memoMark);
+					this.dateButs[i][j].setToolTipText("Has memo");
 				}
+				
 				JLabel todayMark = new JLabel("<html><font color=green>*</html>");
 				this.dateButs[i][j].removeAll();
 				if ((this.month == this.today.get(2)) && (this.year == this.today.get(1))
