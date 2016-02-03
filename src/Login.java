@@ -62,9 +62,8 @@ public class Login extends JFrame {
 			@SuppressWarnings("deprecation")
 			public void actionPerformed(ActionEvent arg0) {
 				contentPane.add(lblLoading);
-				Login.username = passwordField.getText();
-				System.out.println(username);
-				Login.password = textField.getText();
+				Login.password = passwordField.getText();
+				Login.username = textField.getText();
 				if(username.length() != 0 && password.length() != 0){
 					new DBConnect();
 					new MemoCalendar();
@@ -85,7 +84,7 @@ public class Login extends JFrame {
 		txtpnMemoCalendarLogin.setBounds(56, 33, 322, 42);
 		contentPane.add(txtpnMemoCalendarLogin);
 		
-		JLabel lblDoNotUse = new JLabel("Do not use your personal user/pass! I can see these values currently...");
+		JLabel lblDoNotUse = new JLabel("Do not use your personal user/pass! These values are not hidden...");
 		lblDoNotUse.setFont(new Font("Tahoma", Font.PLAIN, 9));
 		lblDoNotUse.setHorizontalAlignment(SwingConstants.CENTER);
 		lblDoNotUse.setForeground(Color.RED);

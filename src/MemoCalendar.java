@@ -256,24 +256,40 @@ public class MemoCalendar extends CalendarData {
 		String memoAreaText = DBConnect.getContentData(MemoCalendar.this);
 		this.memoArea.setText(memoAreaText);
 	}
-
+	
+	private int[] getDatesFromDB(MemoCalendar calendar){
+		return DBConnect.getDates(calendar);
+	}
+	
 	private void showCal() {
+		
+		int[] memoDates = getDatesFromDB(this);
+		int p = 0;
+		while(memoDates[p] != 0){
+			p++;
+		}
+		int[] newDates = new int[p];
+		for(int x=0;x<p;x++){
+			newDates[x] = memoDates[x];
+		}
+		
 		for (int i = 0; i < 6; i++) {
 			for (int j = 0; j < 7; j++) {
 				String fontColor = "black";
-				if (j == 0) {
+				if (j == 0)
 					fontColor = "red";
-				} else if (j == 6) {
+					else if (j == 6)
 					fontColor = "blue";
+				for(int x=0;x<newDates.length;x++){
+					if(this.calDates[i][j] == newDates[x]) {
+						this.dateButs[i][j]
+						.setText("<html><font color=" + fontColor + "><u>" + this.calDates[i][j] + "</u></font></html>");
+					}
+					else{
+						this.dateButs[i][j]
+						.setText("<html><font color=" + fontColor + ">" + this.calDates[i][j] + "</font></html>");
+					}
 				}
-				this.dateButs[i][j]
-					.setText("<html><font color=" + fontColor + ">" + this.calDates[i][j] + "</font></html>");
-				JLabel memoMark = new JLabel("<html><font color=blue>*</html>");
-				if (this.calDates[i][j] == this.today.get(5)) {
-					this.dateButs[i][j].add(memoMark);
-					this.dateButs[i][j].setToolTipText("Has memo");
-				}
-				
 				JLabel todayMark = new JLabel("<html><font color=green>*</html>");
 				this.dateButs[i][j].removeAll();
 				if ((this.month == this.today.get(2)) && (this.year == this.today.get(1))
@@ -281,11 +297,9 @@ public class MemoCalendar extends CalendarData {
 					this.dateButs[i][j].add(todayMark);
 					this.dateButs[i][j].setToolTipText("Today");
 				}
-				if (this.calDates[i][j] == 0) {
+				if (this.calDates[i][j] == 0)
 					this.dateButs[i][j].setVisible(false);
-				} else {
-					this.dateButs[i][j].setVisible(true);
-				}
+				else this.dateButs[i][j].setVisible(true);
 			}
 		}
 	}
