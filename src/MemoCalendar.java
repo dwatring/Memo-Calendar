@@ -20,6 +20,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
 public class MemoCalendar extends CalendarData {
+	int maxMemoSize = 255; //MOVE TO CONFIG
 	JFrame mainFrame;
 	JPanel calOpPanel;
 	JButton todayBut;
@@ -32,7 +33,7 @@ public class MemoCalendar extends CalendarData {
 	MemoCalendar.ListenForCalOpButtons lForCalOpButtons = new MemoCalendar.ListenForCalOpButtons();
 	JPanel calPanel;
 	JButton[] weekDaysName;
-	JButton[][] dateButs = new JButton[6][7];
+	JButton[][] dateButs = new JButton[CALENDAR_HEIGHT][CALENDAR_WIDTH];
 	MemoCalendar.listenForDateButs lForDateButs = new MemoCalendar.listenForDateButs();
 	JPanel infoPanel;
 	JLabel infoClock;
@@ -131,8 +132,8 @@ public class MemoCalendar extends CalendarData {
 		this.calOpPanel.add(this.nYearBut, calOpGC);
 
 		this.calPanel = new JPanel();
-		this.weekDaysName = new JButton[7];
-		for (int i = 0; i < 7; i++) {
+		this.weekDaysName = new JButton[CALENDAR_WIDTH];
+		for (int i = 0; i < CALENDAR_WIDTH; i++) {
 			this.weekDaysName[i] = new JButton(this.WEEK_DAY_NAME[i]);
 			this.weekDaysName[i].setBorderPainted(false);
 			this.weekDaysName[i].setContentAreaFilled(false);
@@ -148,8 +149,8 @@ public class MemoCalendar extends CalendarData {
 			this.weekDaysName[i].setFocusPainted(false);
 			this.calPanel.add(this.weekDaysName[i]);
 		}
-		for (int i = 0; i < 6; i++) {
-			for (int j = 0; j < 7; j++) {
+		for (int i = 0; i < CALENDAR_HEIGHT; i++) {
+			for (int j = 0; j < CALENDAR_WIDTH; j++) {
 				this.dateButs[i][j] = new JButton();
 				this.dateButs[i][j].setBorderPainted(false);
 				this.dateButs[i][j].setContentAreaFilled(false);
@@ -185,7 +186,7 @@ public class MemoCalendar extends CalendarData {
 			public void actionPerformed(ActionEvent arg0){
 				String memo = MemoCalendar.this.memoArea.getText();
 				if (memo.length() > 200){
-					MemoCalendar.this.bottomInfo.setText("Cannot store more than 200 characters");
+					MemoCalendar.this.bottomInfo.setText("Cannot store more than "+maxMemoSize+" characters");
 				}
 				else{
 					String str = MemoCalendar.this.memoArea.getText();
@@ -272,26 +273,31 @@ public class MemoCalendar extends CalendarData {
 		for(int x=0;x<p;x++){
 			newDates[x] = memoDates[x];
 		}
-		
-		for (int i = 0; i < 6; i++) {
-			for (int j = 0; j < 7; j++) {
+		JLabel todayMark = new JLabel("<html><font color=green>*</html>");
+		for (int i = 0; i < CALENDAR_HEIGHT; i++) {
+			for (int j = 0; j < CALENDAR_WIDTH; j++) {
+				this.dateButs[i][j].removeAll();
 				String fontColor = "black";
 				if (j == 0)
 					fontColor = "red";
 					else if (j == 6)
 					fontColor = "blue";
+				boolean contains = false;
 				for(int x=0;x<newDates.length;x++){
-					if(this.calDates[i][j] == newDates[x]) {
-						this.dateButs[i][j]
-						.setText("<html><font color=" + fontColor + "><u>" + this.calDates[i][j] + "</u></font></html>");
+					if(this.calDates[i][j] == newDates[x]){
+						contains = true;
+						break;
 					}
-					else{
-						this.dateButs[i][j]
-						.setText("<html><font color=" + fontColor + ">" + this.calDates[i][j] + "</font></html>");
-					}
+					else contains = false;
 				}
-				JLabel todayMark = new JLabel("<html><font color=green>*</html>");
-				this.dateButs[i][j].removeAll();
+				if(contains == true) {
+					this.dateButs[i][j]
+					.setText("<html><font color=" + fontColor + "><u>" + this.calDates[i][j] + "</u></font></html>");
+				}
+				else{
+					this.dateButs[i][j]
+					.setText("<html><font color=" + fontColor + ">" + this.calDates[i][j] + "</font></html>");
+				}
 				if ((this.month == this.today.get(2)) && (this.year == this.today.get(1))
 						&& (this.calDates[i][j] == this.today.get(5))) {
 					this.dateButs[i][j].add(todayMark);
@@ -336,8 +342,8 @@ public class MemoCalendar extends CalendarData {
 		public void actionPerformed(ActionEvent e) {
 			int k = 0;
 			int l = 0;
-			for (int i = 0; i < 6; i++) {
-				for (int j = 0; j < 7; j++) {
+			for (int i = 0; i < CALENDAR_HEIGHT; i++) {
+				for (int j = 0; j < CALENDAR_WIDTH; j++) {
 					if (e.getSource() == MemoCalendar.this.dateButs[i][j]) {
 						k = i;
 						l = j;

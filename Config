@@ -1,0 +1,9 @@
+SQL INFORMATION
+
+DatabaseHost: www.db4free.net
+DatabasePort: 3306
+DatabaseUsername: dwatring
+DatabasePassword: XXXXX
+DatabaseName: todo
+MaxPasswordLength: 20
+MaxMemoLength: 255

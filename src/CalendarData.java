@@ -13,8 +13,6 @@ class CalendarData {
 	Calendar today = Calendar.getInstance();
 	Calendar cal;
 
-	public CalendarData(){}
-
 	public void setCurrentDate(){ //Sets current calendar data based on getInstance of today
 		this.year = this.today.get(1);
 		this.month = this.today.get(2);

@@ -13,10 +13,9 @@ public class DBConnect {
 	private String dbUsername = "dwatring"; //Enter username for hostname here
 	private String dbPassword = "PASSWORD"; //Enter password for hostname here. Unless no pass then leave blank
 	private String dbName = "todo"; //Intended name of the database in the DB to be created
-	private String username;
+	private static String username;
 	private static String password;
 	private static String usernameDB;
-	//NOTE: Only working for mysql currently
 	
 	public DBConnect(){
 		try{
@@ -25,29 +24,46 @@ public class DBConnect {
 			st = con.createStatement();
 			System.out.println("Connected to: "+hostname);
 		}catch(Exception ex){
-			ex.printStackTrace();
 		}
-		this.username = Login.username;
-		password = Login.username;
-		usernameDB = this.username;
+		username = Login.username;
+		password = Login.password;
+		usernameDB = username;
 		setTable();
 	}
 	
 	public void setTable(){
 		try{
 			String query = ("CREATE Table " + username
-					+ "(password varchar(20) NOT NULL, "
+					+ " (password varchar(20) NOT NULL, "
 					+ "creationDate DATE NOT NULL, "
-					+ "content varchar(200) NOT NULL, "
+					+ "content varchar(255) NOT NULL, "
 					+ "date DATE NOT NULL, "
-					+ "category varchar(20) NOT NULL, "
 					+ "PRIMARY KEY (date));");
 			st.executeUpdate(query);
 			System.out.println("creating table for \""+username+"\" in "+hostname);
 		}catch(Exception ex){
 			if(ex.toString().contains("already exists"))
 				System.out.println("Did not create table for \""+username+"\".  Table already exists.");
-			else ex.printStackTrace();
+		}
+		try{
+			String query = ("CREATE Table users"
+					+ " (username varchar(20) NOT NULL, "
+					+ "password varchar(20) NOT NULL, "
+					+ "PRIMARY KEY (username));");
+			st.executeUpdate(query);
+			System.out.println("creating table for users in "+hostname);
+		}catch(Exception ex){
+			if(ex.toString().contains("already exists"))
+				System.out.println("Did not create users table.  Table already exists.");
+		}
+		try{
+			String query = "INSERT INTO users (username, password) VALUES ('"+username+"', '"+password+"')";
+			st.executeUpdate(query);
+			System.out.println("Added "+username+" to users.");
+		}catch(Exception ex){
+			if(ex.toString().contains("Duplicate entry")){
+				System.out.println(username+" already registered.");
+			}
 		}
 	}
 	
@@ -88,9 +104,25 @@ public class DBConnect {
 			}
 		}catch(Exception ex){
 			System.out.println("Could not retrieve data from database");
-			return "";
 		}
 		return "";
+	}
+
+	public static boolean isPasswordCorrect(String password){
+		try{
+			String query = ("SELECT password FROM users WHERE username = '"+username+"'");
+			rs = st.executeQuery(query);
+			System.out.println("Authenticating password for "+username+".");
+			while(rs.next()){
+				String output = rs.getString("password");
+				if(output.equals(password))
+					return true;
+				else return false;
+			}
+		}catch(Exception ex){
+			System.out.println("Could not check password for "+username+".");
+		}
+		return false;
 	}
 	
 	public static void setContentData(MemoCalendar calendar, String str){
@@ -103,9 +135,9 @@ public class DBConnect {
 		String currentDate = todayYear+"-"+todayMonth+"-"+todayDay;
 		String date = year+"-"+month+"-"+day;
 		try{
-			String query = "INSERT INTO "+usernameDB+" (password, creationDate, content, date, category) VALUES ('"+password+"', '"+
+			String query = "INSERT INTO "+usernameDB+" (password, creationDate, content, date) VALUES ('"+password+"', '"+
 					currentDate+"', '"+
-					str+"', '"+date+"', "+"'normal')";
+					str+"', '"+date+"')";
 			st.executeUpdate(query);
 			System.out.println("Wrote data to: "+hostname);
 		}catch(Exception ex){

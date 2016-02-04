@@ -63,14 +63,20 @@ public class Login extends JFrame {
 			public void actionPerformed(ActionEvent arg0) {
 				contentPane.add(lblLoading);
 				Login.password = passwordField.getText();
-				Login.username = textField.getText();
+				Login.username = textField.getText().toLowerCase();
+				//TODO add check for user/pass too long for config
 				if(username.length() != 0 && password.length() != 0){
 					new DBConnect();
-					new MemoCalendar();
-					setVisible(false);
-				}else{
+						if(DBConnect.isPasswordCorrect(password) == false){
+							lblLoading.setText("Password does not match this username");
+						}
+						else{
+							lblLoading.setText("Logging in...");
+							new MemoCalendar();
+							setVisible(false);
+						}
+				}else
 					lblLoading.setText("Please enter a username and password");
-				}
 			}
 		});
 		btnNewButton.setBounds(172, 195, 89, 23);
@@ -84,7 +90,7 @@ public class Login extends JFrame {
 		txtpnMemoCalendarLogin.setBounds(56, 33, 322, 42);
 		contentPane.add(txtpnMemoCalendarLogin);
 		
-		JLabel lblDoNotUse = new JLabel("Do not use your personal user/pass! These values are not hidden...");
+		JLabel lblDoNotUse = new JLabel("Do not use your personal user/pass! These values are not hidden.");
 		lblDoNotUse.setFont(new Font("Tahoma", Font.PLAIN, 9));
 		lblDoNotUse.setHorizontalAlignment(SwingConstants.CENTER);
 		lblDoNotUse.setForeground(Color.RED);
