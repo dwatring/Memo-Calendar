@@ -4,20 +4,41 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+	/**
+	 * METHOD DOCUMENTATION AVAILABLE AT https://github.com/dwatring/Memo-Calendar/wiki
+	 */
+
 public class DBConnect {
 	private static Connection con;
 	private static Statement st;
 	private static ResultSet rs;
+	
 	private static String hostname = "www.db4free.net"; //Enter hostname for database here as hostname
-	private int port = 3306;
-	private String dbUsername = "dwatring"; //Enter username for hostname here
-	private String dbPassword = "PASSWORD"; //Enter password for hostname here. Unless no pass then leave blank
-	private String dbName = "todo"; //Intended name of the database in the DB to be created
+	private static int port = 3306;
+	private static String dbUsername = "dwatring"; //Enter username for hostname here
+	private static String dbPassword = "derekvw"; //Enter password for hostname here. Unless no pass then leave blank
+	private static String dbName = "todo"; //Intended name of the database in the DB to be created
+	
 	private static String username;
 	private static String password;
 	private static String usernameDB;
 	
 	public DBConnect(){
+		username = Login.username;
+		password = Login.password;
+		usernameDB = username;
+		
+		connectToDB();
+		initializeDB();
+	}
+	
+	public void initializeDB(){
+		createUsernameTable();
+		createUsersTable();
+		addUserToDB();
+	}
+	//TODO ORDER METHODS BELOW IN ORDER OF CALLS
+	public static void connectToDB(){
 		try{
 			Class.forName("com.mysql.jdbc.Driver");
 			con = DriverManager.getConnection("jdbc:mysql://"+hostname+":"+port+"/"+dbName+"?autoReconnect=true&useSSL=false",dbUsername,dbPassword);
@@ -25,13 +46,9 @@ public class DBConnect {
 			System.out.println("Connected to: "+hostname);
 		}catch(Exception ex){
 		}
-		username = Login.username;
-		password = Login.password;
-		usernameDB = username;
-		setTable();
 	}
 	
-	public void setTable(){
+	public static void createUsernameTable(){
 		try{
 			String query = ("CREATE Table " + username
 					+ " (password varchar(20) NOT NULL, "
@@ -45,6 +62,21 @@ public class DBConnect {
 			if(ex.toString().contains("already exists"))
 				System.out.println("Did not create table for \""+username+"\".  Table already exists.");
 		}
+	}
+	
+	public static void addUserToDB(){
+		try{
+			String query = "INSERT INTO users (username, password) VALUES ('"+username+"', '"+password+"')";
+			st.executeUpdate(query);
+			System.out.println("Added "+username+" to users.");
+		}catch(Exception ex){
+			if(ex.toString().contains("Duplicate entry")){
+				System.out.println(username+" already registered.");
+			}
+		}
+	}
+	
+	public static void createUsersTable(){
 		try{
 			String query = ("CREATE Table users"
 					+ " (username varchar(20) NOT NULL, "
@@ -55,15 +87,6 @@ public class DBConnect {
 		}catch(Exception ex){
 			if(ex.toString().contains("already exists"))
 				System.out.println("Did not create users table.  Table already exists.");
-		}
-		try{
-			String query = "INSERT INTO users (username, password) VALUES ('"+username+"', '"+password+"')";
-			st.executeUpdate(query);
-			System.out.println("Added "+username+" to users.");
-		}catch(Exception ex){
-			if(ex.toString().contains("Duplicate entry")){
-				System.out.println(username+" already registered.");
-			}
 		}
 	}
 	
@@ -160,4 +183,5 @@ public class DBConnect {
 		}
 		else return val;
 	}
+	
 }
