@@ -1,21 +1,20 @@
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
-import javax.swing.JTextField;
 import javax.swing.JTextPane;
-import javax.swing.JPasswordField;
 import javax.swing.JLabel;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.io.InputStream;
 import java.awt.event.ActionEvent;
-import javax.swing.UIManager;
 import java.awt.Font;
 import java.awt.FontFormatException;
+import com.alee.laf.WebLookAndFeel;
+import com.alee.laf.text.WebPasswordField;
+import com.alee.laf.text.WebTextField;
 
 import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
 
 import java.awt.Color;
 
@@ -26,79 +25,123 @@ public class Login extends JFrame {
 	protected static String password;
 	
 	private JPanel contentPane;
-	private JTextField textField;
-	private JPasswordField passwordField;
 	private int width = 450;
 	private int height = 300;
-	
+	static Color bg = new Color(96, 125, 139);
+	static Color accent = new Color(0, 188, 212);
 	/**
 	 * METHOD DOCUMENTATION AVAILABLE AT https://github.com/dwatring/Memo-Calendar/wiki
 	 */
-	
 	public Login() {
 		
 		/**
 		 * Basic frame setup
 		 */
-		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setResizable(false);
 		this.setLocationRelativeTo(null);
 		this.setResizable(false);
 		this.setSize(width, height);
-		try {
-			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-			SwingUtilities.updateComponentTreeUI(this);
-		} catch (Exception ex) {
-		}
+	    try 
+	    {
+	    	WebLookAndFeel.install ();
+	    } 
+	    catch (Exception e) 
+	    {
+	      e.printStackTrace();
+	    }
 		contentPane = new JPanel();
+		contentPane.setBackground(bg);
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		
 		/**
-		 * Initialize the font
+		 * Initialize fonts
 		 */
-		
-		InputStream is = Login.class.getResourceAsStream("Oxygen-Regular.ttf");
-		Font font = null;
-		try {
-			font = Font.createFont(Font.TRUETYPE_FONT, is);
-		} catch (FontFormatException ex) {}
-		catch (IOException ex){}
+		Font title = loadFont("Nexa_Light.otf", 38f);
 		
 		/**
 		 * Add contents to the pane
 		 */
-		
-		JLabel lblUsername = new JLabel("Username:");
-		lblUsername.setBounds(44, 117, 69, 27);
-		contentPane.add(lblUsername);
-		
-		textField = new JTextField();
-		textField.setBounds(123, 117, 188, 27);
-		contentPane.add(textField);
-		textField.setColumns(10);
-		
-		JLabel lblPassword = new JLabel("Password:");
-		lblPassword.setBounds(44, 156, 69, 27);
-		contentPane.add(lblPassword);
-		
-		passwordField = new JPasswordField();
-		passwordField.setBounds(123, 156, 188, 27);
-		contentPane.add(passwordField);
-		
+		createStatusText();
+		createUsernameField();
+		createPasswordField();
+		createLoginButton(contentPane);
+		createWarningText();
+		createTitleText(title);
+	}
+	
+	public static Font loadFont(String name, float size){
+		InputStream is = Login.class.getResourceAsStream("/resources/"+name);
+		Font title = null;
+		try {
+			title = Font.createFont(Font.TRUETYPE_FONT, is);
+			title = title.deriveFont(size);
+		} catch (FontFormatException ex) {ex.printStackTrace();
+		}
+		catch (IOException ex){ex.printStackTrace();}
+		return title;
+	}
+	
+	public void createUsernameField(){
+        final WebTextField textField = new WebTextField ( 15 );
+        textField.setInputPrompt ("Username");
+        textField.setInputPromptFont (new Font("Helvetica Neue", Font.PLAIN, 12));
+        textField.setBounds(123, 117, 188, 27);
+        textField.setHideInputPromptOnFocus ( false );
+        contentPane.add(textField);
+	}
+	
+	public void createPasswordField(){
+        final WebPasswordField passwordField = new WebPasswordField ( 15 );
+        passwordField.setInputPrompt ("Password");
+		passwordField.setFont(new Font("Helvetica Neue", Font.PLAIN, 12));
+        passwordField.setBounds(123, 156, 188, 27);
+        passwordField.setHideInputPromptOnFocus ( false );
+        contentPane.add(passwordField);
+	}
+	
+	public void createStatusText(){
 		JLabel statusText = new JLabel("");
-		statusText.setForeground(Color.RED);
+		statusText.setForeground(accent);
+		statusText.setBackground(bg);
 		statusText.setText("");
 		statusText.setHorizontalAlignment(SwingConstants.CENTER);
 		statusText.setBounds(10, 223, 414, 27);
 		contentPane.add(statusText);
-		
+	}
+	
+	public void createTitleText(Font title){
+		JTextPane titleText = new JTextPane();
+		titleText.setForeground(Color.WHITE);
+		titleText.setFont(title);
+		titleText.setEditable(false);
+		titleText.setText("Memo Calendar Login");
+		titleText.setBackground(bg);
+		titleText.setBounds(22, 23, 402, 54);
+		contentPane.add(titleText);
+	}
+	
+	public void createWarningText(){
+		JLabel warningText = new JLabel("Do not use your personal user/pass! These values are not hidden.");
+		warningText.setFont(new Font("Helvetica Neue", Font.PLAIN, 12));
+		warningText.setHorizontalAlignment(SwingConstants.CENTER);
+		warningText.setForeground(accent);
+		warningText.setBounds(10, 75, 414, 23);
+		contentPane.add(warningText);
+	}	
+	
+	public void createLoginButton(JPanel contentPane){
 		JButton loginButton = new JButton("Login");
+		loginButton.setBackground(bg);
+		loginButton.setFont(new Font("Helvetica Neue", Font.PLAIN, 12));
 		loginButton.addActionListener(new ActionListener() {
 			@SuppressWarnings("deprecation")
 			public void actionPerformed(ActionEvent arg0) {
+				WebPasswordField passwordField = (WebPasswordField) contentPane.findComponentAt(124, 157);
+				WebTextField textField = (WebTextField) contentPane.findComponentAt(124, 118);
+				JLabel statusText = (JLabel) contentPane.findComponentAt(11, 224);
 				statusText.setText("Loading...");
 				Login.password = passwordField.getText();
 				Login.username = textField.getText().toLowerCase();
@@ -119,21 +162,5 @@ public class Login extends JFrame {
 		});
 		loginButton.setBounds(172, 195, 89, 23);
 		contentPane.add(loginButton);
-
-		JTextPane titlePane = new JTextPane();
-		Font title = font.deriveFont(30f);
-		titlePane.setEditable(false);
-		titlePane.setFont(title);
-		titlePane.setText("Memo Calendar Login");
-		titlePane.setBackground(UIManager.getColor("Button.background"));
-		titlePane.setBounds(70, 33, 322, 42);
-		contentPane.add(titlePane);
-		
-		JLabel warningText = new JLabel("Do not use your personal user/pass! These values are not hidden.");
-		warningText.setFont(new Font("Tahoma", Font.PLAIN, 9));
-		warningText.setHorizontalAlignment(SwingConstants.CENTER);
-		warningText.setForeground(Color.RED);
-		warningText.setBounds(66, 83, 304, 23);
-		contentPane.add(warningText);
 	}
 }

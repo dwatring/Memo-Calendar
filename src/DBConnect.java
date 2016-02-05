@@ -27,7 +27,6 @@ public class DBConnect {
 		username = Login.username;
 		password = Login.password;
 		usernameDB = username;
-		
 		connectToDB();
 		initializeDB();
 	}
@@ -43,7 +42,7 @@ public class DBConnect {
 			Class.forName("com.mysql.jdbc.Driver");
 			con = DriverManager.getConnection("jdbc:mysql://"+hostname+":"+port+"/"+dbName+"?autoReconnect=true&useSSL=false",dbUsername,dbPassword);
 			st = con.createStatement();
-			System.out.println("Connected to: "+hostname);
+			//System.out.println("Connected to: "+hostname);
 		}catch(Exception ex){
 		}
 	}
@@ -57,10 +56,10 @@ public class DBConnect {
 					+ "date DATE NOT NULL, "
 					+ "PRIMARY KEY (date));");
 			st.executeUpdate(query);
-			System.out.println("creating table for \""+username+"\" in "+hostname);
+			//System.out.println("creating table for \""+username+"\" in "+hostname);
 		}catch(Exception ex){
-			if(ex.toString().contains("already exists"))
-				System.out.println("Did not create table for \""+username+"\".  Table already exists.");
+			//if(ex.toString().contains("already exists"))
+				//System.out.println("Did not create table for \""+username+"\".  Table already exists.");
 		}
 	}
 	
@@ -68,10 +67,10 @@ public class DBConnect {
 		try{
 			String query = "INSERT INTO users (username, password) VALUES ('"+username+"', '"+password+"')";
 			st.executeUpdate(query);
-			System.out.println("Added "+username+" to users.");
+			//System.out.println("Added "+username+" to users.");
 		}catch(Exception ex){
 			if(ex.toString().contains("Duplicate entry")){
-				System.out.println(username+" already registered.");
+				//System.out.println(username+" already registered.");
 			}
 		}
 	}
@@ -83,10 +82,10 @@ public class DBConnect {
 					+ "password varchar(20) NOT NULL, "
 					+ "PRIMARY KEY (username));");
 			st.executeUpdate(query);
-			System.out.println("creating table for users in "+hostname);
+			//System.out.println("creating table for users in "+hostname);
 		}catch(Exception ex){
-			if(ex.toString().contains("already exists"))
-				System.out.println("Did not create users table.  Table already exists.");
+			//if(ex.toString().contains("already exists"))
+				//System.out.println("Did not create users table.  Table already exists.");
 		}
 	}
 	
@@ -96,7 +95,7 @@ public class DBConnect {
 		try{
 			String query = ("SELECT DAY(date) FROM "+usernameDB+" WHERE content<>'' AND MONTH(date) = "+month+"  AND YEAR(date) = "+year);
 			rs = st.executeQuery(query);
-			System.out.println("Getting days with memos from this month");
+			//System.out.println("Getting days with memos from this month");
 			int[] days = new int[31];
 			int i=0;
 			while(rs.next()){
@@ -106,7 +105,7 @@ public class DBConnect {
 			return days;
 		}catch(Exception ex){
 			ex.printStackTrace();
-			System.out.println("Could not retrieve data from database");
+			//System.out.println("Could not retrieve data from database");
 		}
 		return null;
 	}
@@ -120,13 +119,13 @@ public class DBConnect {
 		try{
 			String query = ("SELECT content FROM "+usernameDB+" WHERE date = '"+date+"'");
 			rs = st.executeQuery(query);
-			System.out.println("Gathering data from: "+hostname);
+			//System.out.println("Gathering data from: "+hostname);
 			while(rs.next()){
 				String content = rs.getString("content");
 				return content;
 			}
 		}catch(Exception ex){
-			System.out.println("Could not retrieve data from database");
+			//System.out.println("Could not retrieve data from database");
 		}
 		return "";
 	}
@@ -135,7 +134,7 @@ public class DBConnect {
 		try{
 			String query = ("SELECT password FROM users WHERE username = '"+username+"'");
 			rs = st.executeQuery(query);
-			System.out.println("Authenticating password for "+username+".");
+			//System.out.println("Authenticating password for "+username+".");
 			while(rs.next()){
 				String output = rs.getString("password");
 				if(output.equals(password))
@@ -143,7 +142,7 @@ public class DBConnect {
 				else return false;
 			}
 		}catch(Exception ex){
-			System.out.println("Could not check password for "+username+".");
+			//System.out.println("Could not check password for "+username+".");
 		}
 		return false;
 	}
@@ -162,15 +161,15 @@ public class DBConnect {
 					currentDate+"', '"+
 					str+"', '"+date+"')";
 			st.executeUpdate(query);
-			System.out.println("Wrote data to: "+hostname);
+			//System.out.println("Wrote data to: "+hostname);
 		}catch(Exception ex){
 			if(ex.toString().contains("Duplicate entry")){
-				System.out.println("Could not create table for this date, updating current");
+				//System.out.println("Could not create table for this date, updating current");
 				try {
 					String query = "UPDATE "+usernameDB+" SET creationDate = '"+currentDate+"', content = '"+str+"' WHERE date = '"+date+"'";
 					st.executeUpdate(query);
 				} catch (SQLException e) {
-					System.out.println("Could not update table for  \""+usernameDB+"\".");
+					//System.out.println("Could not update table for  \""+usernameDB+"\".");
 				}
 			}
 		}
