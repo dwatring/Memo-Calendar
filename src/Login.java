@@ -37,11 +37,11 @@ public class Login extends JFrame {
 		/**
 		 * Basic frame setup
 		 */
+		DBConnect.connectToDB();
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setResizable(false);
-		this.setLocationRelativeTo(null);
-		this.setResizable(false);
 		this.setSize(width, height);
+		this.setLocationRelativeTo(null);
 	    try 
 	    {
 	    	WebLookAndFeel.install ();

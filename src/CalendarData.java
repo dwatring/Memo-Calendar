@@ -28,6 +28,11 @@ class CalendarData {
 		} else {
 			this.lastDate = this.lastDateOfMonth[this.month];
 		}
+		for (int i = 0; i < CALENDAR_HEIGHT; i++){
+			for (int j = 0; j < CALENDAR_WIDTH; j++){
+				this.calDates[i][j] = 0;
+			 }
+		}
 		int i = 0;
 		int num = 1;
 		for (int k = 0; i < CALENDAR_HEIGHT; i++){

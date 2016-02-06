@@ -51,11 +51,12 @@ public class MemoCalendar extends CalendarData {
 	WebButton delBut;
 	WebButton clearBut;
 	JPanel frameBottomPanel;
+	TitledBorder memoBorder;
 	JLabel bottomInfo = new JLabel("Welcome to Memo Calendar!");
 	WebButton[][] dateButs = new WebButton[CALENDAR_HEIGHT][CALENDAR_WIDTH];
 	MemoCalendar.ListenForCalOpButtons lForCalOpButtons = new MemoCalendar.ListenForCalOpButtons();
 	MemoCalendar.listenForDateButs lForDateButs = new MemoCalendar.listenForDateButs();
-	final String[] WEEK_DAY_NAME = { "SUN", "MON", "TUE", "WED", "THR", "FRI", "SAT" };
+	final String[] WEEK_DAY_NAME = { "SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT" };
 	final String title = "Memo Calendar";
 	final String ClrButMsg1 = "Text Area cleared";
 
@@ -69,12 +70,94 @@ public class MemoCalendar extends CalendarData {
 	}
 
 	public MemoCalendar() {
+		System.out.println("Creating memo calendar");
 		setCurrentDate();
-		initializeGUI(this);
+		initializeGUI();
+		System.out.println("TEST8");
 		focusToday();
+		System.out.println("TEST9");
+		readMemo();
+		System.out.println("TEST10");
 		MemoCalendar.ThreadConrol threadCnl = new MemoCalendar.ThreadConrol();
 		threadCnl.start();
-		readMemo();
+	}
+	
+	public void initializeGUI(){
+		initializeMainFrame();
+		setCalenderOperationButtons();
+		setCalendarPanel();
+		setWeekdayButtons();
+		setDateButtons();
+		showCal();
+		setInfoPanel();
+		setMemoPanel(this);
+		setSubPanels();
+	}
+	
+	private void showCal() {
+		String fontColor = "black";
+		System.out.println("Displaying the calendar");
+		WebLabel todayMark = new WebLabel("<html><font color=green>*</html>");
+		int[] datesWithMemos = getDatesFromDB(this);
+		int numDaysWithMemos = 0;
+		while(datesWithMemos[numDaysWithMemos] != 0){
+			numDaysWithMemos++;
+		}
+		int[] newDates = new int[numDaysWithMemos];
+		for(int x=0;x<numDaysWithMemos;x++){
+			newDates[x] = datesWithMemos[x];
+		}
+		for (int i = 0; i < CALENDAR_HEIGHT; i++) {
+			for (int j = 0; j < CALENDAR_WIDTH; j++) {
+				if (j == 0 || j == 6)
+					fontColor = "#00BCD4";
+				setDateButtonTextAndConditions(this, fontColor, newDates, i, j);
+				if ((this.month == this.today.get(2)) && (this.year == this.today.get(1))
+						&& (this.calDates[i][j] == this.today.get(5))) {
+					this.dateButs[i][j].add(todayMark);
+					this.dateButs[i][j].setToolTipText("Today");
+				}
+				if (this.calDates[i][j] == 0) {
+					this.dateButs[i][j].setVisible(false);
+				} else {
+					this.dateButs[i][j].setVisible(true);
+				}
+			}
+		}
+	}
+	
+	private void initializeMainFrame(){
+		mainFrame = new JFrame("Memo Calendar - Derek-watring.com");
+		mainFrame.setDefaultCloseOperation(3);
+		mainFrame.setSize(700, 400);
+		mainFrame.setLocationRelativeTo(null);
+		mainFrame.setResizable(false);
+		try {
+	    	WebLookAndFeel.install ();
+		} catch (Exception e) {
+			bottomInfo.setText("ERROR : LookAndFeel setting failed");
+		}
+	}
+	
+	private void setDateButtonTextAndConditions(MemoCalendar memo, String fontColor, int[] newDates, int i, int j){
+		boolean contains = false;
+		for(int x=0;x<newDates.length;x++){
+			if(this.calDates[i][j] == newDates[x]){
+				contains = true;
+				break;
+			}
+			else contains = false;
+		}
+		if(contains == true) {
+			memo.dateButs[i][j].setDrawBottom(true);
+			
+			memo.dateButs[i][j].setBackground(Login.accent);
+			memo.dateButs[i][j].setText("<html><font color=" + fontColor + ">" + this.calDates[i][j] + "</font></html>");
+		}
+		else{
+			memo.dateButs[i][j].setText("<html><font color=" + fontColor + ">" + this.calDates[i][j] + "</font></html>");
+			memo.dateButs[i][j].setDrawBottom(false);
+		}
 	}
 	
 	private void focusToday() {
@@ -94,54 +177,6 @@ public class MemoCalendar extends CalendarData {
 		return DBConnect.getDates(calendar);
 	}
 	
-	private void showCal() {
-		int[] memoDates = getDatesFromDB(this);
-		int p = 0;
-		while(memoDates[p] != 0){
-			p++;
-		}
-		int[] newDates = new int[p];
-		for(int x=0;x<p;x++){
-			newDates[x] = memoDates[x];
-		}
-		WebLabel todayMark = new WebLabel("<html><font color=green>*</html>");
-		todayMark.setBackground(Login.bg);
-		for (int i = 0; i < CALENDAR_HEIGHT; i++) {
-			for (int j = 0; j < CALENDAR_WIDTH; j++) {
-				this.dateButs[i][j].removeAll();
-				String fontColor = "black";
-				if (j == 0 || j == 6)
-					fontColor = "#00BCD4";
-				boolean contains = false;
-				for(int x=0;x<newDates.length;x++){
-					if(this.calDates[i][j] == newDates[x]){
-						contains = true;
-						break;
-					}
-					else contains = false;
-				}
-				if(contains == true) {
-					this.dateButs[i][j].setDrawBottom(true);
-					
-					this.dateButs[i][j].setBackground(Login.accent);
-					this.dateButs[i][j].setText("<html><font color=" + fontColor + ">" + this.calDates[i][j] + "</font></html>");
-				}
-				else{
-					this.dateButs[i][j]
-					.setText("<html><font color=" + fontColor + ">" + this.calDates[i][j] + "</font></html>");
-				}
-				if ((this.month == this.today.get(2)) && (this.year == this.today.get(1))
-						&& (this.calDates[i][j] == this.today.get(5))) {
-					this.dateButs[i][j].add(todayMark);
-					this.dateButs[i][j].setToolTipText("Today");
-				}
-				if (this.calDates[i][j] == 0)
-					this.dateButs[i][j].setVisible(false);
-				else this.dateButs[i][j].setVisible(true);
-			}
-		}
-	}
-
 	private class ListenForCalOpButtons implements ActionListener {
 		private ListenForCalOpButtons() {}
 		public void actionPerformed(ActionEvent e) {
@@ -248,42 +283,9 @@ public class MemoCalendar extends CalendarData {
 			}
 		}
 	}
-
-	public static void initializeGUI(MemoCalendar memo){
-		System.out.println("initialize GUI");
-		memo.mainFrame = new JFrame("Memo Calendar - Derek-watring.com");
-		memo.mainFrame.setDefaultCloseOperation(3);
-		memo.mainFrame.setSize(700, 400);
-		memo.mainFrame.setLocationRelativeTo(null);
-		memo.mainFrame.setResizable(false);
-		try {
-	    	WebLookAndFeel.install ();
-		} catch (Exception e) {
-			memo.bottomInfo.setText("ERROR : LookAndFeel setting failed");
-		}
-		memo.calOpPanel = new JPanel();
-		memo.calOpPanel.setBackground(Login.bg);
-		memo.todayBut = new WebButton("Today");
-		memo.todayBut.setToolTipText("Today");
-		memo.todayBut.addActionListener(memo.lForCalOpButtons);
-		memo.todayLab = new JLabel(memo.today.get(2) + 1 + "/" + memo.today.get(5) + "/" + memo.today.get(1));
-		memo.todayLab.setForeground(Color.WHITE);
-		memo.lYearBut = new WebButton("<<");
-		memo.lYearBut.setToolTipText("Previous Year");
-		memo.lYearBut.addActionListener(memo.lForCalOpButtons);
-		memo.lMonBut = new WebButton("<");
-		memo.lMonBut.setToolTipText("Previous Month");
-		memo.lMonBut.addActionListener(memo.lForCalOpButtons);
-		memo.curMMYYYYLab = new JLabel(
-				"<html><table width=100><tr><th><font size=5><font color=\"#FFFFFF\">" + (memo.month + 1 < 10 ? "&nbsp;" : "")
-						+ (memo.month + 1) + " / " + memo.year + "</font></font></th></tr></table></html>");
-		memo.nMonBut = new WebButton(">");
-		memo.nMonBut.setToolTipText("Next Month");
-		memo.nMonBut.addActionListener(memo.lForCalOpButtons);
-		memo.nYearBut = new WebButton(">>");
-		memo.nYearBut.setToolTipText("Next Year");
-		memo.nYearBut.addActionListener(memo.lForCalOpButtons);
-		memo.calOpPanel.setLayout(new GridBagLayout());
+	
+	public void setCalendarPanel(){
+		calOpPanel.setLayout(new GridBagLayout());
 		GridBagConstraints calOpGC = new GridBagConstraints();
 		calOpGC.gridx = 1;
 		calOpGC.gridy = 1;
@@ -294,156 +296,177 @@ public class MemoCalendar extends CalendarData {
 		calOpGC.insets = new Insets(5, 5, 0, 0);
 		calOpGC.anchor = 17;
 		calOpGC.fill = 0;
-		memo.calOpPanel.add(memo.todayBut, calOpGC);
+		calOpPanel.add(todayBut, calOpGC);
 		calOpGC.gridwidth = 3;
 		calOpGC.gridx = 2;
 		calOpGC.gridy = 1;
-		memo.calOpPanel.add(memo.todayLab, calOpGC);
+		calOpPanel.add(todayLab, calOpGC);
 		calOpGC.anchor = 10;
 		calOpGC.gridwidth = 1;
 		calOpGC.gridx = 1;
 		calOpGC.gridy = 2;
-		memo.calOpPanel.add(memo.lYearBut, calOpGC);
+		calOpPanel.add(lYearBut, calOpGC);
 		calOpGC.gridwidth = 1;
 		calOpGC.gridx = 2;
 		calOpGC.gridy = 2;
-		memo.calOpPanel.add(memo.lMonBut, calOpGC);
+		calOpPanel.add(lMonBut, calOpGC);
 		calOpGC.gridwidth = 2;
 		calOpGC.gridx = 3;
 		calOpGC.gridy = 2;
-		memo.calOpPanel.add(memo.curMMYYYYLab, calOpGC);
+		calOpPanel.add(curMMYYYYLab, calOpGC);
 		calOpGC.gridwidth = 1;
 		calOpGC.gridx = 5;
 		calOpGC.gridy = 2;
-		memo.calOpPanel.add(memo.nMonBut, calOpGC);
+		calOpPanel.add(nMonBut, calOpGC);
 		calOpGC.gridwidth = 1;
 		calOpGC.gridx = 6;
 		calOpGC.gridy = 2;
-		memo.calOpPanel.add(memo.nYearBut, calOpGC);
-		memo.calPanel = new JPanel();
-		memo.calPanel.setBackground(Login.bg);
-		memo.weekDaysName = new WebButton[CALENDAR_WIDTH];
+		calOpPanel.add(nYearBut, calOpGC);
+		calPanel = new JPanel();
+		calPanel.setBackground(Login.bg);
+		calPanel.setLayout(new GridLayout(0, 7, 2, 2));
+		calPanel.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 5));
+	}
+	
+	public void setCalenderOperationButtons(){
+		calOpPanel = new JPanel();
+		calOpPanel.setBackground(Login.bg);
+		todayBut = new WebButton("Today");
+		todayBut.setToolTipText("Today");
+		todayBut.addActionListener(lForCalOpButtons);
+		todayLab = new JLabel(today.get(2) + 1 + "/" + today.get(5) + "/" + today.get(1));
+		todayLab.setForeground(Color.WHITE);
+		lYearBut = new WebButton("<<");
+		lYearBut.setToolTipText("Previous Year");
+		lYearBut.addActionListener(lForCalOpButtons);
+		lMonBut = new WebButton("<");
+		lMonBut.setToolTipText("Previous Month");
+		lMonBut.addActionListener(lForCalOpButtons);
+		curMMYYYYLab = new JLabel(
+				"<html><table width=100><tr><th><font size=5><font color=\"#FFFFFF\">" + (month + 1 < 10 ? "&nbsp;" : "")
+						+ (month + 1) + " / " + year + "</font></font></th></tr></table></html>");
+		nMonBut = new WebButton(">");
+		nMonBut.setToolTipText("Next Month");
+		nMonBut.addActionListener(lForCalOpButtons);
+		nYearBut = new WebButton(">>");
+		nYearBut.setToolTipText("Next Year");
+		nYearBut.addActionListener(lForCalOpButtons);
+	}
+	
+	public void setWeekdayButtons(){
+		weekDaysName = new WebButton[CALENDAR_WIDTH];
 		for (int i = 0; i < CALENDAR_WIDTH; i++) {
-			memo.weekDaysName[i] = new WebButton(memo.WEEK_DAY_NAME[i]);
-			memo.weekDaysName[i].setDefaultButtonShadeColor(Color.WHITE);
-			memo.weekDaysName[i].setAnimate(true);
-			memo.weekDaysName[i].setDrawLines(true, true, true, true);
-			memo.weekDaysName[i].setDrawSides(false, false, false, false);
-			memo.weekDaysName[i].setContentAreaFilled(false);
-			memo.weekDaysName[i].setForeground(Color.WHITE);
-			if (i == 0) {
-				memo.weekDaysName[i].setBottomBgColor(Login.accent);
-			} else if (i == 6) {
-				memo.weekDaysName[i].setBottomBgColor(Login.accent);
+			weekDaysName[i] = new WebButton(WEEK_DAY_NAME[i]);
+			weekDaysName[i].setDrawLines(true, true, true, true);
+			weekDaysName[i].setDrawSides(false, false, false, false);
+			weekDaysName[i].setContentAreaFilled(false);
+			weekDaysName[i].setForeground(Color.WHITE);
+			if (i == 0 || i == 6) {
+				weekDaysName[i].setBottomBgColor(Login.accent);
+				weekDaysName[i].setTopBgColor(Login.accent);
 			} else {
-				memo.weekDaysName[i].setBottomBgColor(new Color(150, 150, 150));
+				weekDaysName[i].setBottomBgColor(new Color(150, 150, 150));
 			}
-			memo.weekDaysName[i].setOpaque(true);
-			memo.weekDaysName[i].setFont(Login.loadFont("Oxygen-Regular.ttf", 12f));
-			memo.weekDaysName[i].setFocusPainted(false);
-			memo.weekDaysName[i].setDrawBottom(false);
-			memo.calPanel.add(memo.weekDaysName[i]);
+			weekDaysName[i].setOpaque(true);
+			weekDaysName[i].setFont(Login.loadFont("Oxygen-Regular.ttf", 12f));
+			weekDaysName[i].setFocusPainted(false);
+			weekDaysName[i].setDrawBottom(false);
+			calPanel.add(weekDaysName[i]);
 		}
-		memo.resetDateButtons();
-		memo.calPanel.setLayout(new GridLayout(0, 7, 2, 2));
-		memo.calPanel.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 5));
-		memo.showCal();
-		//memo.calendarPanel = new JPanel();
-		//memo.calendarPanel.add(memo.calPanel);
-		//memo.calendarPanel.add(memo.calOpPanel);
-		memo.infoPanel = new JPanel();
-		memo.infoPanel.setBackground(Login.bg);
-		memo.infoPanel.setLayout(new BorderLayout());
-		memo.infoClock = new JLabel("", 4);
-		memo.infoClock.setBackground(Login.bg);
-		memo.infoClock.setForeground(Color.WHITE);
-		memo.infoClock.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-		memo.infoPanel.add(memo.infoClock, "North");
-		memo.selectedDate = new JLabel("<Html><font size=3><font color=\"#FFFFFF\">" + (memo.today.get(2) + 1) + "/" + memo.today.get(5) + "/"
-				+ memo.today.get(1) + "&nbsp;(Today)</font></font></html>", 2);
-		memo.selectedDate.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 0));
-
-		memo.memoPanel = new JPanel();
-		memo.memoPanel.setBackground(Login.bg);
-		memo.memoPanel.setForeground(Color.WHITE);
-		TitledBorder memoBorder = BorderFactory.createTitledBorder("Memo");
+	}
+	
+	public void setInfoPanel(){
+		infoPanel = new JPanel();
+		infoPanel.setBackground(Login.bg);
+		infoPanel.setLayout(new BorderLayout());
+		infoClock = new JLabel("", 4);
+		infoClock.setBackground(Login.bg);
+		infoClock.setForeground(Color.WHITE);
+		infoClock.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+		infoPanel.add(infoClock, "North");
+		selectedDate = new JLabel("<Html><font size=3><font color=\"#FFFFFF\">" + (today.get(2) + 1) + "/" + today.get(5) + "/"
+				+ today.get(1) + "&nbsp;(Today)</font></font></html>", 2);
+		selectedDate.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 0));
+	}
+	public void setMemoPanel(MemoCalendar memo){
+		memoPanel = new JPanel();
+		memoPanel.setBackground(Login.bg);
+		memoPanel.setForeground(Color.WHITE);
+		memoBorder = BorderFactory.createTitledBorder("Memo");
 		memoBorder.setTitleColor(Color.WHITE);
-		memo.memoPanel.setBorder(memoBorder);
-		memo.memoArea = new JTextArea();
-		memo.memoArea.setLineWrap(true);
-		memo.memoArea.setWrapStyleWord(true);
-		memo.memoAreaSP = new JScrollPane(memo.memoArea, 22, 31);
-		memo.memoSubPanel = new JPanel();
-		memo.memoSubPanel.setBackground(Login.bg);
-		memo.saveBut = new WebButton("Save");
-		memo.saveBut.addActionListener(new ActionListener(){
+		memoPanel.setBorder(memoBorder);
+		memoArea = new JTextArea();
+		memoArea.setLineWrap(true);
+		memoArea.setWrapStyleWord(true);
+		memoAreaSP = new JScrollPane(memoArea, 22, 31);
+		memoSubPanel = new JPanel();
+		memoSubPanel.setBackground(Login.bg);
+		saveBut = new WebButton("Save");
+		saveBut.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent arg0){
-				String memoText = memo.memoArea.getText();
+				String memoText = memoArea.getText();
 				if (memoText.length() > 200){
-					memo.bottomInfo.setText("Cannot store more than "+memo.maxMemoSize+" characters");
+					bottomInfo.setText("Cannot store more than "+maxMemoSize+" characters");
 				}
 				else{
-					String str = memo.memoArea.getText();
+					String str = memoArea.getText();
 					DBConnect.setContentData(memo, str);
-					memo.bottomInfo.setText("Data saved to database");
+					bottomInfo.setText("Data saved to database");
 				}
-				memo.showCal();
+				showCal();
 			}
 		});
-		memo.clearBut = new WebButton("Clear");
-		memo.clearBut.addActionListener(new ActionListener(){
+		clearBut = new WebButton("Clear");
+		clearBut.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent arg0){
-				memo.memoArea.setText(null);
-				memo.bottomInfo.setText("Text area cleared");
+				memoArea.setText(null);
+				bottomInfo.setText("Text area cleared");
 			}
 		});
-		memo.memoSubPanel.add(memo.saveBut);
-		memo.memoSubPanel.add(memo.clearBut);
-		memo.memoPanel.setLayout(new BorderLayout());
-		memo.memoPanel.add(memo.selectedDate, "North");
-		memo.memoPanel.add(memo.memoAreaSP, "Center");
-		memo.memoPanel.add(memo.memoSubPanel, "South");
-		memo.bottomInfo.setForeground(Color.WHITE);
-		memo.bottomInfo.setBackground(Login.bg);
+		memoSubPanel.add(saveBut);
+		memoSubPanel.add(clearBut);
+		memoPanel.setLayout(new BorderLayout());
+		memoPanel.add(selectedDate, "North");
+		memoPanel.add(memoAreaSP, "Center");
+		memoPanel.add(memoSubPanel, "South");
+	}
+	
+	public void setSubPanels(){
+		bottomInfo.setForeground(Color.WHITE);
+		bottomInfo.setBackground(Login.bg);
 		JPanel frameSubPanelWest = new JPanel();
 		frameSubPanelWest.setBackground(Login.bg);
-		Dimension calOpPanelSize = memo.calOpPanel.getPreferredSize();
+		Dimension calOpPanelSize = calOpPanel.getPreferredSize();
 		calOpPanelSize.height = 90;
-		memo.calOpPanel.setPreferredSize(calOpPanelSize);
+		calOpPanel.setPreferredSize(calOpPanelSize);
 		frameSubPanelWest.setLayout(new BorderLayout());
-		frameSubPanelWest.add(memo.calOpPanel, "North");
-		frameSubPanelWest.add(memo.calPanel, "Center");
+		frameSubPanelWest.add(calOpPanel, "North");
+		frameSubPanelWest.add(calPanel, "Center");
 
 		JPanel frameSubPanelEast = new JPanel();
 		frameSubPanelEast.setBackground(Login.bg);
-		Dimension infoPanelSize = memo.infoPanel.getPreferredSize();
+		Dimension infoPanelSize = infoPanel.getPreferredSize();
 		infoPanelSize.height = 65;
-		memo.infoPanel.setPreferredSize(infoPanelSize);
+		infoPanel.setPreferredSize(infoPanelSize);
 		frameSubPanelEast.setLayout(new BorderLayout());
-		frameSubPanelEast.add(memo.infoPanel, "North");
-		frameSubPanelEast.add(memo.memoPanel, "Center");
+		frameSubPanelEast.add(infoPanel, "North");
+		frameSubPanelEast.add(memoPanel, "Center");
 
 		Dimension frameSubPanelWestSize = frameSubPanelWest.getPreferredSize();
 		frameSubPanelWestSize.width = 410;
 		frameSubPanelWest.setPreferredSize(frameSubPanelWestSize);
-		
-      //  WebSplitPane splitPane = new WebSplitPane (HORIZONTAL_SPLIT, frameSubPanelWest, frameSubPanelEast );
-      //  splitPane.setOneTouchExpandable ( true );
-       // splitPane.setPreferredSize ( new Dimension ( 250, 200 ) );
-       // splitPane.setDividerLocation ( 125 );
-      //  splitPane.setContinuousLayout ( true );
-		memo.frameBottomPanel = new JPanel();
-		memo.frameBottomPanel.setBackground(Login.bg);
-		memo.frameBottomPanel.add(memo.bottomInfo);
 
-		memo.mainFrame.setLayout(new BorderLayout());
-		memo.mainFrame.add(frameSubPanelWest, "West");
-		memo.mainFrame.add(frameSubPanelEast, "Center");
-		memo.mainFrame.add(memo.frameBottomPanel, "South");
-		memo.mainFrame.setVisible(true);
-
+		frameBottomPanel = new JPanel();
+		frameBottomPanel.setBackground(Login.bg);
+		frameBottomPanel.add(bottomInfo);
+		mainFrame.setLayout(new BorderLayout());
+		mainFrame.add(frameSubPanelWest, "West");
+		mainFrame.add(frameSubPanelEast, "Center");
+		mainFrame.add(frameBottomPanel, "South");
+		mainFrame.setVisible(true);
 	}
-	public void resetDateButtons(){
+	
+	public void setDateButtons(){
 		for (int i = 0; i < CALENDAR_HEIGHT; i++) {
 			for (int j = 0; j < CALENDAR_WIDTH; j++) {
 				this.dateButs[i][j] = new WebButton();
