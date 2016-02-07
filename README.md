@@ -1,7 +1,7 @@
 # Memo Calendar
 A memo keeper / to-do calendar with a beautiful swing frontend and a java backend with SQL connection!
 
-[Executable](https://www.dropbox.com/s/4vyphqqnty0pro1/MemoCalendar.exe?dl=0)
+[Executable](https://www.dropbox.com/s/4vyphqqnty0pro1/MemoCalendar.exe?dl=0) (created with [Launch4J](http://launch4j.sourceforge.net/))
 
 ### Features
 * `Non-Restrictive` : The Memo Calendar allows you to save any text to a date. To-do's, diet log, workout log, dream log, you name it!
