@@ -13,7 +13,7 @@ A memo keeper / to-do calendar with a beautiful swing frontend and a java backen
 * `JDBC / MySQL Drivers` : This particular version uses SQL to store memo information for each date.
 
 ### Documentation
-* JavaDoc coming soon!
+* [JavaDoc](https://github.com/dwatring/Memo-Calendar/tree/master/doc)
 
 ### About Me
 * Visit [Derek-Watring.com](http://Derek-Watring.com/projects) to view my other projects. This site also contains my blog and other personal information. 
