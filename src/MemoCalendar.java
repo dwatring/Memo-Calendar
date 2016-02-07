@@ -69,14 +69,10 @@ public class MemoCalendar extends CalendarData {
 	}
 
 	public MemoCalendar() {
-		System.out.println("Creating memo calendar");
 		setCurrentDate();
 		initializeGUI();
-		System.out.println("TEST8");
 		focusToday();
-		System.out.println("TEST9");
 		readMemo();
-		System.out.println("TEST10");
 		MemoCalendar.ThreadConrol threadCnl = new MemoCalendar.ThreadConrol();
 		threadCnl.start();
 	}
@@ -95,7 +91,6 @@ public class MemoCalendar extends CalendarData {
 	
 	private void showCal() {
 		String fontColor = "black";
-		System.out.println("Displaying the calendar");
 		WebLabel todayMark = new WebLabel("<html><font color=green>*</html>");
 		int[] datesWithMemos = getDatesFromDB(this);
 		int numDaysWithMemos = 0;

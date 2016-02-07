@@ -15,9 +15,9 @@ public class DBConnect {
 	
 	private static String hostname = "www.db4free.net"; //Enter hostname for database here as hostname
 	private static int port = 3306;
-	private static String dbUsername = "dwatring"; //Enter username for hostname here
-	private static String dbPassword = "XXXXXXX"; //Enter password for hostname here. Unless no pass then leave blank
-	private static String dbName = "todo"; //Intended name of the database in the DB to be created
+	private static String dbUsername = "derek4412"; //Enter username for hostname here
+	private static String dbPassword = "password"; //Enter password for hostname here. Unless no pass then leave blank
+	private static String dbName = "todo3"; //Intended name of the database in the DB to be created
 	
 	private static String username;
 	private static String password;
