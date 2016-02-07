@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project default="javadoc">
+    <target name="javadoc">
+        <javadoc access="private" author="true" classpath="../lib/mysql-connector-java-5.1.38-bin.jar;../lib/weblaf-complete-1.29.jar" destdir="" doctitle="Memo Calendar" nodeprecated="false" nodeprecatedlist="false" noindex="false" nonavbar="false" notree="false" source="1.8" sourcefiles="../src/MemoCalendar.java,../src/DBConnect.java,../src/CalendarData.java,../src/Login.java" sourcepath="../src" splitindex="true" use="true" version="true"/>
+    </target>
+</project>

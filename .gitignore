@@ -65,4 +65,7 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
+
+# Personal additions
 /bin/
+Oxygen-Regular.ttf

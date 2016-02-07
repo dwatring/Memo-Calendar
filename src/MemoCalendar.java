@@ -23,7 +23,7 @@ import com.alee.laf.button.WebButton;
 import com.alee.laf.label.WebLabel;
 
 	/**
-	 * METHOD DOCUMENTATION AVAILABLE AT https://github.com/dwatring/Memo-Calendar/wiki
+	 * AVAILABLE AT https://github.com/dwatring/Memo-Calendar/
 	 */
 
 public class MemoCalendar extends CalendarData {
@@ -42,7 +42,6 @@ public class MemoCalendar extends CalendarData {
 	JPanel infoPanel;
 	JLabel infoClock;
 	JPanel memoPanel;	
-	//JPanel calendarPanel;
 	JLabel selectedDate;
 	JTextArea memoArea;
 	JScrollPane memoAreaSP;

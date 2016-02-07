@@ -5,7 +5,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 	/**
-	 * METHOD DOCUMENTATION AVAILABLE AT https://github.com/dwatring/Memo-Calendar/wiki
+	 * AVAILABLE AT https://github.com/dwatring/Memo-Calendar/
 	 */
 
 public class DBConnect {

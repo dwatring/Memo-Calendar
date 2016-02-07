@@ -29,9 +29,11 @@ public class Login extends JFrame {
 	private int height = 300;
 	static Color bg = new Color(96, 125, 139);
 	static Color accent = new Color(0, 188, 212);
+	
 	/**
-	 * METHOD DOCUMENTATION AVAILABLE AT https://github.com/dwatring/Memo-Calendar/wiki
+	 * AVAILABLE AT https://github.com/dwatring/Memo-Calendar/
 	 */
+	
 	public Login() {
 		
 		/**
