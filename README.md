@@ -13,7 +13,7 @@ A memo keeper / to-do calendar with a beautiful swing frontend and a java backen
 
 ### Dependencies
 * `JDBC / MySQL Drivers` : This particular version uses SQL to store memo information for each date.
-* `[WebLaF](http://weblookandfeel.com/)` : for the swing GUI look and feel.
+* `WebLaF` : [WebLaF](http://weblookandfeel.com/) for the swing GUI look and feel.
 
 ### Documentation
 * Javadoc
